@@ -123,10 +123,12 @@ def main(cam):
                     sendmail(img, senddif, actualdate)
                     time.sleep(interval)
                     gray = cv2.cvtColor(cam.read()[1], cv2.COLOR_BGR2GRAY)
+                    sleep = False
                     break
                 else:
                     pass
             if sleep: time.sleep(interval)
+            else: sleep = True
 
         except:
             cam.release()
