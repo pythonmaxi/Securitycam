@@ -64,3 +64,11 @@ Do you want to intall samba (Share saved photos on local network)
 Warning: Your current configuration file wil be moved to /etc/samba/smb.conf.bak''', end='')
 if input('[y,n]') == 'y':
     os.system('mv /etc/samba/smb.conf /etc/samba/smb.conf.bak')
+    os.system('mv smb.conf /etc/samba/smb.conf')
+    print('''\
+Done moving files
+restarting samba''')
+    os.system('systemctl restart smbd')
+    accept = input('Do you want to replace rc.local file?\nthis will backup your previos rc.local file [y,n]')
+    if accept == 'y':
+        os.system()
