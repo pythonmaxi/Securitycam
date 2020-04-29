@@ -17,16 +17,31 @@ import datetime
 import traceback
 import time
 import os
+import dbm
+import pickle
+import sys
 
+db = dbm.open('config', 'r')
+confs = pickle.loads(db['confs'])
+config = {}
+for conf in confs:
+    if conf['type'] == 'str':
+        config[conf['key']] = str(conf['value'])
+    elif conf['type'] == 'float':
+        config[conf['key']] = float(conf['value'])
+    elif conf['type'] == 'list':
+        config[conf['key']] = conf['value'].split(',')
+    else:
+        sys.exit('undefined type {}'.format(conf['type']))
 # Set variables that will be neded
-mailto = ['maxicarlos08@gmail.com']
+mailto = config['mailto']
 date = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 # log = open('/home/pi/logs/log_{}'.format(date), 'w')
 # sys.stdout = log
 print('starting securitycam script')
 path = '/home/pi/Pictures/Security_' + date + '/'
-interval = 1
-area = 500
+interval = config['interval']
+area = config['minarea']
 sleep = True
 print('creating path')
 if not os.path.exists(path):
@@ -85,9 +100,9 @@ def sendmail(img, diff, nowdate):
     msg.attach(msgaf)
     msgbf.add_header('Content-ID', '<2>')
     msg.attach(msgbf)
-    s = smtplib.SMTP(host='MAILSERVER', port='PORT')
+    s = smtplib.SMTP(host=config['mailserver'], port=config['port'])
     s.starttls()
-    s.login('LOGIN', 'PASSWD')
+    s.login(config['login'], config['passwd'])
     s.send_message(msg)
     s.quit()
 
